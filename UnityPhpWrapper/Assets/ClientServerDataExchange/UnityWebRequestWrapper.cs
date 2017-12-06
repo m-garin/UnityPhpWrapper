@@ -54,17 +54,24 @@ namespace ClientServerDataExchange
                 www = UnityWebRequest.Post(_serverLink, form);
             }
 
-            yield return www.Send();
+            try
+            {
+                yield return www.SendWebRequest();
 
-            UnityWebResponseWrapper response = new UnityWebResponseWrapper(www.downloadHandler.data, www.downloadHandler.text);
-            if (www.isNetworkError)
-            {
-                _CallbackError(response);
+                UnityWebResponseWrapper response = new UnityWebResponseWrapper(www.downloadHandler.data, www.downloadHandler.text);
+                if (www.isNetworkError)
+                {
+                    _CallbackError(response);
+                }
+                else
+                {
+                    //Debug.Log(response.text);
+                    _CallbackSuccess(response);
+                }
             }
-            else
+            finally
             {
-                //Debug.Log(response.text);
-                _CallbackSuccess(response);
+                www.Dispose();
             }
         }
     }
